@@ -2,11 +2,9 @@ const std = @import("std");
 const testing = std.testing;
 const Allocator = std.mem.Allocator;
 
-const TuringModelError = @import("TuringModelError.zig").TuringModelError;
-
 const TuringTapeAddress = struct { i: usize, is_left: bool };
 
-const TuringTape = struct {
+pub const TuringTape = struct {
     allocator: Allocator,
     tape_rh: std.ArrayList(u8),
     tape_lh: std.ArrayList(u8),
@@ -17,7 +15,7 @@ const TuringTape = struct {
         return .{ .allocator = allocator, .tape_rh = tape_rh, .tape_lh = tape_lh };
     }
 
-    pub fn tape_address(idx: i128) TuringTapeAddress {
+    pub fn tapeAddress(idx: i128) TuringTapeAddress {
         if (idx >= 0) {
             return .{ .i = @intCast(idx), .is_left = false };
         } else {
@@ -26,7 +24,7 @@ const TuringTape = struct {
     }
 
     pub fn getAddr(self: *TuringTape, idx: i128) !*u8 {
-        const addr = TuringTape.tape_address(idx);
+        const addr = TuringTape.tapeAddress(idx);
         const tape: *std.ArrayList(u8) = if (addr.is_left) &(self.tape_lh) else &(self.tape_rh);
         // Extend if necessary
 
@@ -48,7 +46,7 @@ const TuringTape = struct {
         addrv.* = v;
     }
 
-    pub fn deinit(self: *TuringTape) void {
+    pub fn deinit(self: TuringTape) void {
         self.tape_rh.deinit();
         self.tape_lh.deinit();
     }
@@ -59,8 +57,8 @@ test "TuringTape" {
     var tt = TuringTape.init(allocator);
     defer tt.deinit();
 
-    const a1 = TuringTape.tape_address(2);
-    const a2 = TuringTape.tape_address(-4);
+    const a1 = TuringTape.tapeAddress(2);
+    const a2 = TuringTape.tapeAddress(-4);
 
     try testing.expect(a1.i == 2);
     try testing.expect(!a1.is_left);

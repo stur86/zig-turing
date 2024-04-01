@@ -21,7 +21,9 @@ pub const TuringModel = struct {
         var ruleset = try self.allocator.alloc(TuringRule, size);
 
         for (0..ruleset.len) |i| {
-            ruleset[i] = undefined;
+            const sym_n: u8 = @truncate(i % self.states_n);
+            const s_n: u8 = @truncate((i - sym_n) / self.states_n);
+            ruleset[i] = .{ .state_in = s_n, .symbol_in = sym_n, .state_out = s_n, .symbol_out = sym_n, .step = StepDir.HALT };
         }
 
         self.ruleset = ruleset;
@@ -56,7 +58,7 @@ pub const TuringModel = struct {
         return self.ruleset[s_n * self.symbols_n + sym_n];
     }
 
-    pub fn applyRule(self: TuringModel, s_n: *u8, sym_n: *u8, idx: i32) !i32 {
+    pub fn applyRule(self: TuringModel, s_n: *u8, sym_n: *u8, idx: i128) !i128 {
         const rule = try self.getRule(s_n.*, sym_n.*);
         return try rule.apply(s_n, sym_n, idx);
     }
