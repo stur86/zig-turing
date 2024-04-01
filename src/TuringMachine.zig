@@ -56,4 +56,6 @@ test "TuringMachine" {
     const halt = try tm.step();
 
     try testing.expect(halt);
+    try testing.expect(tm.cursor_state == 1);
+    try testing.expect(try tm.tape.get(0) == 1);
 }
