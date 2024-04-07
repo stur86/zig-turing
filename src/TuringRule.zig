@@ -17,10 +17,10 @@ pub const StepDir = enum(i2) {
 };
 
 pub const TuringRule = struct {
-    state_in: u8,
-    symbol_in: u8,
-    state_out: u8,
-    symbol_out: u8,
+    state_in: u8 = 0,
+    symbol_in: u8 = 0,
+    state_out: u8 = 0,
+    symbol_out: u8 = 0,
     step: StepDir = StepDir.HALT,
 
     pub fn apply(self: TuringRule, state: *u8, symbol: *u8, index: i128) !i128 {
