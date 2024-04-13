@@ -4,7 +4,10 @@ const trules = @import("TuringRule.zig");
 const TuringMachine = @import("TuringMachine.zig").TuringMachine;
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    const allocator = arena.allocator();
     const args = try std.process.argsAlloc(allocator);
     defer std.process.argsFree(allocator, args);
 
@@ -16,13 +19,25 @@ pub fn main() !void {
     var cfreader = cfg.TuringConfigReader.init(allocator);
     try cfreader.read(path);
 
-    const config = cfreader.config orelse unreachable;
+    if (cfreader.config) |config| {
+        var machine = try TuringMachine.fromConfig(config, allocator);
 
-    const machine = try TuringMachine.fromConfig(config, allocator);
+        for (0..config.max_steps) |_| {
+            const halt = try machine.step();
 
-    std.debug.print("{any}\n", .{cfreader.config.?.rules});
-    std.debug.print("{any}\n", .{machine.tape.tape_rh.items});
-    std.debug.print("{any}\n", .{machine.tape.tape_lh.items});
+            var tapeline = std.ArrayList(u8).init(allocator);
+            defer tapeline.deinit();
+            try machine.printTape(&tapeline);
+            _ = try std.io.getStdOut().write(tapeline.items);
+
+            if (halt) {
+                _ = try std.io.getStdOut().write("HALT\n");
+                break;
+            }
+        }
+    } else {
+        return error{InvalidOrMissingConfig}.InvalidOrMissingConfig;
+    }
 }
 
 test {

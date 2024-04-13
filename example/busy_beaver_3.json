@@ -1,0 +1,46 @@
+{
+    "states": 3,
+    "symbols": 2,
+    "rules": [{
+        "state_in": 0,
+        "symbol_in": 0,
+        "state_out": 1,
+        "symbol_out": 1,
+        "step": "RIGHT"
+    }, 
+    {
+        "state_in": 0,
+        "symbol_in": 1,
+        "state_out": 2,
+        "symbol_out": 1,
+        "step": "LEFT"
+    },
+    {
+        "state_in": 1,
+        "symbol_in": 0,
+        "state_out": 0,
+        "symbol_out": 1,
+        "step": "LEFT"
+    },
+    {
+        "state_in": 1,
+        "symbol_in": 1,
+        "state_out": 1,
+        "symbol_out": 1,
+        "step": "RIGHT"
+    },
+    {
+        "state_in": 2,
+        "symbol_in": 0,
+        "state_out": 1,
+        "symbol_out": 1,
+        "step": "LEFT"
+    },
+    {
+        "state_in": 2,
+        "symbol_in": 1,
+        "state_out": 2,
+        "symbol_out": 1,
+        "step": "HALT"
+    }]
+}

@@ -1,6 +1,7 @@
 const std = @import("std");
 const testing = std.testing;
 const Allocator = std.mem.Allocator;
+const TuringModelError = @import("TuringModelError.zig").TuringModelError;
 
 const TuringTapeAddress = struct { i: usize, is_left: bool };
 
@@ -46,6 +47,23 @@ pub const TuringTape = struct {
         addrv.* = v;
     }
 
+    pub fn getConst(self: TuringTape, idx: i128) u8 {
+        const addr = TuringTape.tapeAddress(idx);
+        const items: *const []u8 = if (addr.is_left) &self.tape_lh.items else &self.tape_rh.items;
+        if (addr.i >= items.len) {
+            return 0;
+        }
+        return items.*[addr.i];
+    }
+
+    pub fn lLen(self: TuringTape) usize {
+        return self.tape_lh.items.len;
+    }
+
+    pub fn rLen(self: TuringTape) usize {
+        return self.tape_rh.items.len;
+    }
+
     pub fn deinit(self: TuringTape) void {
         self.tape_rh.deinit();
         self.tape_lh.deinit();
@@ -53,7 +71,7 @@ pub const TuringTape = struct {
 };
 
 test "TuringTape" {
-    const allocator = std.heap.page_allocator;
+    const allocator = std.testing.allocator;
     var tt = TuringTape.init(allocator);
     defer tt.deinit();
 

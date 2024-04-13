@@ -71,7 +71,7 @@ pub const TuringModel = struct {
 };
 
 test "TuringModel" {
-    const allocator = std.heap.page_allocator;
+    const allocator = std.testing.allocator;
     var tm = TuringModel.init(4, 5, allocator);
     try tm.build();
     defer tm.deinit();

@@ -65,6 +65,33 @@ pub const TuringMachine = struct {
         return false;
     }
 
+    pub fn printTape(self: TuringMachine, ans: *std.ArrayList(u8)) !void {
+        const idx0: i128 = @min(-@as(i128, self.tape.lLen()), self.idx);
+        const idx1: i128 = @max(self.tape.rLen(), self.idx + 1);
+
+        const lIdx = try std.fmt.allocPrint(self.allocator, "({}) -> ", .{idx0});
+        defer self.allocator.free(lIdx);
+        try ans.appendSlice(lIdx);
+
+        var idx: i128 = idx0;
+        while (idx < idx1) : (idx += 1) {
+            const sym: u8 = self.tape.getConst(idx);
+            if (idx == self.idx) {
+                const pointerSymbol = try std.fmt.allocPrint(self.allocator, "[{}]{} ", .{ self.cursor_state, sym });
+                defer self.allocator.free(pointerSymbol);
+                try ans.appendSlice(pointerSymbol);
+            } else {
+                const tapeSymbol = try std.fmt.allocPrint(self.allocator, "{} ", .{sym});
+                defer self.allocator.free(tapeSymbol);
+                try ans.appendSlice(tapeSymbol);
+            }
+        }
+
+        const rIdx = try std.fmt.allocPrint(self.allocator, " <- ({})\n", .{idx1 - 1});
+        defer self.allocator.free(rIdx);
+        try ans.appendSlice(rIdx);
+    }
+
     pub fn deinit(self: TuringMachine) void {
         self.model.deinit();
         self.tape.deinit();
@@ -72,7 +99,7 @@ pub const TuringMachine = struct {
 };
 
 test "TuringMachine" {
-    const allocator = std.heap.page_allocator;
+    const allocator = std.testing.allocator;
     var tm = TuringMachine.init(2, 2, allocator);
     try tm.build();
     defer tm.deinit();
@@ -89,7 +116,7 @@ test "TuringMachine" {
 }
 
 test "TuringMachineFromConfig" {
-    const allocator: Allocator = std.heap.page_allocator;
+    const allocator = std.testing.allocator;
     const rules: []TuringRule = try allocator.alloc(TuringRule, 1);
     defer allocator.free(rules);
     rules[0] = .{ .state_in = 0, .symbol_in = 1, .state_out = 1, .symbol_out = 2 };

@@ -5,7 +5,7 @@ const Allocator = std.mem.Allocator;
 
 const MAX_FILE_LENGTH = 1 << 16;
 
-pub const TuringConfig = struct { states: u8 = 2, symbols: u8 = 2, rules: ?[]TuringRule = null, starting_tape: ?[]u8 = null, starting_tape_zero_index: i128 = 0 };
+pub const TuringConfig = struct { states: u8 = 2, symbols: u8 = 2, rules: ?[]TuringRule = null, starting_tape: ?[]u8 = null, starting_tape_zero_index: i128 = 0, max_steps: usize = 1000 };
 
 pub const TuringConfigReader = struct {
     allocator: Allocator,
@@ -30,7 +30,7 @@ pub const TuringConfigReader = struct {
 };
 
 test "TuringConfig" {
-    const allocator = std.heap.page_allocator;
+    const allocator = std.testing.allocator;
     const parsed = try std.json.parseFromSlice(TuringConfig, allocator, "{\"states\": 3}", .{});
     const config = parsed.value;
 
