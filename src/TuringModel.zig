@@ -47,6 +47,8 @@ pub const TuringModel = struct {
 
         try self.checkState(s_n);
         try self.checkSymbol(sym_n);
+        try self.checkState(rule.state_out);
+        try self.checkSymbol(rule.symbol_out);
 
         self.ruleset[s_n * self.symbols_n + sym_n] = rule;
     }
